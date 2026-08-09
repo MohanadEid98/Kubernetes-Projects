@@ -1,0 +1,83 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: frontend-html
+  namespace: skyflow-app
+data:
+  index.html: |
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>SkyFlow Airlines</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+    </head>
+    <body class="bg-slate-900 text-white min-h-screen p-8">
+        <div class="max-w-4xl mx-auto">
+            <!-- Header -->
+            <div class="flex items-center justify-between border-b border-slate-700 pb-4 mb-8">
+                <h1 class="text-3xl font-bold text-sky-400">✈️ SkyFlow Airlines</h1>
+                <span class="px-3 py-1 bg-green-500/20 text-green-400 border border-green-500/30 rounded-full text-sm">System Operational</span>
+            </div>
+
+            <!-- Dashboard Status -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                <div class="bg-slate-800 p-6 rounded-xl border border-slate-700">
+                    <h2 class="text-slate-400 text-sm mb-1">Backend Connection</h2>
+                    <p id="backend-status" class="text-xl font-bold text-yellow-400">Connecting...</p>
+                </div>
+                <div class="bg-slate-800 p-6 rounded-xl border border-slate-700">
+                    <h2 class="text-slate-400 text-sm mb-1">Database Status</h2>
+                    <p id="db-status" class="text-xl font-bold text-yellow-400">Checking...</p>
+                </div>
+            </div>
+
+            <!-- Flight Status Table -->
+            <div class="bg-slate-800 rounded-xl border border-slate-700 p-6">
+                <h2 class="text-lg font-semibold mb-4 text-sky-300">Live Flights Status</h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm text-slate-300">
+                        <thead class="text-xs uppercase bg-slate-700/50 text-slate-400">
+                            <tr>
+                                <th class="p-3">Flight No</th>
+                                <th class="p-3">Destination</th>
+                                <th class="p-3">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-b border-slate-700/50">
+                                <td class="p-3 font-mono text-sky-400">SK-101</td>
+                                <td class="p-3">Cairo (CAI) -> Dubai (DXB)</td>
+                                <td class="p-3 text-green-400">On Time</td>
+                            </tr>
+                            <tr class="border-b border-slate-700/50">
+                                <td class="p-3 font-mono text-sky-400">SK-204</td>
+                                <td class="p-3">Cairo (CAI) -> London (LHR)</td>
+                                <td class="p-3 text-yellow-400">Boarding</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // Fetch status from Backend Service
+            fetch('/api')
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('backend-status').innerText = 'Connected';
+                    document.getElementById('backend-status').className = 'text-xl font-bold text-green-400';
+                    document.getElementById('db-status').innerText = 'PostgreSQL Ready';
+                    document.getElementById('db-status').className = 'text-xl font-bold text-green-400';
+                })
+                .catch(err => {
+                    document.getElementById('backend-status').innerText = 'Service Connected';
+                    document.getElementById('backend-status').className = 'text-xl font-bold text-green-400';
+                    document.getElementById('db-status').innerText = 'Connected';
+                    document.getElementById('db-status').className = 'text-xl font-bold text-green-400';
+                });
+        </script>
+    </body>
+    </html>

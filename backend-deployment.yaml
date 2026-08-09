@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-deployment
+  namespace: skyflow-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+      - name: backend
+        image: python:3.9-slim
+        command: ["/bin/sh", "-c"]
+        args:
+          - |
+            pip install flask psycopg2-binary
+            python -u -c '
+            from flask import Flask, jsonify
+            app = Flask(__name__)
+
+            @app.route("/")
+            def home():
+                return jsonify({
+                    "status": "success",
+                    "app": "SkyFlow Airlines API",
+                    "version": "1.0.0"
+                })
+
+            if __name__ == "__main__":
+                app.run(host="0.0.0.0", port=5000)
+            '
+        ports:
+        - containerPort: 5000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+  namespace: skyflow-app
+spec:
+  type: NodePort
+  selector:
+    app: backend
+  ports:
+    - port: 5000
+      targetPort: 5000
+      nodePort: 30001
